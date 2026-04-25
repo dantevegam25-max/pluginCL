@@ -24,13 +24,11 @@ class Plugin_Clasificados_Template_Loader {
     public static function force_200_status() {
         global $wp_query;
         $anuncio_cat = get_query_var( 'anuncio_cat_silo' );
+        $anuncio_loc = get_query_var( 'anuncio_ubicacion_silo' );
 
-        if ( ! empty( $anuncio_cat ) ) {
-            $term = get_term_by('slug', $anuncio_cat, 'anuncio_categoria');
-            if ( $term ) {
-                status_header( 200 );
-                $wp_query->is_404 = false;
-            }
+        if ( ! empty( $anuncio_cat ) || ! empty( $anuncio_loc ) ) {
+            status_header( 200 );
+            $wp_query->is_404 = false;
         }
     }
 
@@ -42,19 +40,13 @@ class Plugin_Clasificados_Template_Loader {
 	 */
 	public static function load_template( $template ) {
 		$anuncio_cat = get_query_var( 'anuncio_cat_silo' );
+        $anuncio_loc = get_query_var( 'anuncio_ubicacion_silo' );
 
 		// Check if our custom query vars are present
-		if ( ! empty( $anuncio_cat ) ) {
-
-            // First, verify if the category actually exists as a term
-            $term = get_term_by('slug', $anuncio_cat, 'anuncio_categoria');
-
-            if ( $term ) {
-                // It's our silo URL
-                $custom_template = self::locate_template( 'archive-anuncios.php' );
-                if ( $custom_template ) {
-                    return $custom_template;
-                }
+		if ( ! empty( $anuncio_cat ) || ! empty( $anuncio_loc ) ) {
+            $custom_template = self::locate_template( 'archive-anuncios.php' );
+            if ( $custom_template ) {
+                return $custom_template;
             }
 		}
 

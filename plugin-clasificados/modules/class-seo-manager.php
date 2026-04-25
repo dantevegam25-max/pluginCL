@@ -14,11 +14,8 @@ class Plugin_Clasificados_SEO_Manager {
 	 * Init hooks.
 	 */
 	public static function init() {
-        // Check if SEO features are enabled in settings
         if ( get_option( 'plugin_clasificados_enable_seo', 1 ) ) {
-		    // Filter document title (works for WP 4.4+)
 		    add_filter( 'document_title_parts', array( __CLASS__, 'dynamic_title' ) );
-		    // Add meta description in head
 		    add_action( 'wp_head', array( __CLASS__, 'dynamic_meta_description' ), 1 );
         }
 	}
@@ -28,34 +25,32 @@ class Plugin_Clasificados_SEO_Manager {
 	 */
 	public static function dynamic_title( $title ) {
 		$cat_slug = get_query_var( 'anuncio_cat_silo' );
+        $loc_slug = get_query_var( 'anuncio_ubicacion_silo' );
 
-		if ( ! empty( $cat_slug ) && get_term_by( 'slug', $cat_slug, 'anuncio_categoria' ) ) {
+		if ( ! empty( $cat_slug ) || ! empty( $loc_slug ) ) {
 
-			$ciudad_slug = get_query_var( 'anuncio_ciudad' );
-			$distrito_slug = get_query_var( 'anuncio_distrito' );
+			$parts = array();
 
-			$cat_term = get_term_by( 'slug', $cat_slug, 'anuncio_categoria' );
-			$cat_name = $cat_term ? $cat_term->name : ucfirst( $cat_slug );
-
-			$parts = array( $cat_name );
-
-			if ( ! empty( $distrito_slug ) ) {
-				$distrito_name = str_replace( '-', ' ', ucfirst( $distrito_slug ) );
-				$parts[] = 'en ' . $distrito_name;
-			} elseif ( ! empty( $ciudad_slug ) ) {
-				$ciudad_name = str_replace( '-', ' ', ucfirst( $ciudad_slug ) );
-				$parts[] = 'en ' . $ciudad_name;
-			}
-
-            if ( ! empty( $ciudad_slug ) && ! empty( $distrito_slug ) ) {
-                 $ciudad_name = str_replace( '-', ' ', ucfirst( $ciudad_slug ) );
-                 $parts[] = ', ' . $ciudad_name;
+            if ( ! empty( $cat_slug ) ) {
+                $cat_term = get_term_by( 'slug', $cat_slug, 'anuncio_categoria' );
+                if ( $cat_term ) {
+                    $parts[] = $cat_term->name;
+                }
+            } else {
+                 $parts[] = __( 'Anuncios', 'plugin-clasificados' );
             }
+
+			if ( ! empty( $loc_slug ) ) {
+                $loc_term = get_term_by( 'slug', $loc_slug, 'anuncio_ubicacion' );
+                if ( $loc_term ) {
+                    $parts[] = 'en ' . $loc_term->name;
+                }
+			}
 
 			$parts[] = '| Compra y Venta';
 
 			$title['title'] = implode( ' ', $parts );
-			unset( $title['tagline'] ); // Optional: remove tagline to keep it clean
+			unset( $title['tagline'] );
 		}
 
 		return $title;
@@ -66,23 +61,27 @@ class Plugin_Clasificados_SEO_Manager {
 	 */
 	public static function dynamic_meta_description() {
 		$cat_slug = get_query_var( 'anuncio_cat_silo' );
+        $loc_slug = get_query_var( 'anuncio_ubicacion_silo' );
 
-		if ( ! empty( $cat_slug ) && get_term_by( 'slug', $cat_slug, 'anuncio_categoria' ) ) {
+		if ( ! empty( $cat_slug ) || ! empty( $loc_slug ) ) {
 
-			$ciudad_slug = get_query_var( 'anuncio_ciudad' );
-			$distrito_slug = get_query_var( 'anuncio_distrito' );
-
-			$cat_term = get_term_by( 'slug', $cat_slug, 'anuncio_categoria' );
-			$cat_name = $cat_term ? $cat_term->name : ucfirst( $cat_slug );
+            $cat_name = 'anuncios';
+            if ( ! empty( $cat_slug ) ) {
+                $cat_term = get_term_by( 'slug', $cat_slug, 'anuncio_categoria' );
+                if ( $cat_term ) {
+                    $cat_name = strtolower($cat_term->name);
+                }
+            }
 
 			$location = 'tu área';
-			if ( ! empty( $distrito_slug ) ) {
-				$location = str_replace( '-', ' ', ucfirst( $distrito_slug ) );
-			} elseif ( ! empty( $ciudad_slug ) ) {
-				$location = str_replace( '-', ' ', ucfirst( $ciudad_slug ) );
+			if ( ! empty( $loc_slug ) ) {
+                $loc_term = get_term_by( 'slug', $loc_slug, 'anuncio_ubicacion' );
+                if ( $loc_term ) {
+                    $location = $loc_term->name;
+                }
 			}
 
-			$desc = sprintf( 'Encuentra los mejores %s en %s. Compra, vende y descubre oportunidades increíbles en nuestra plataforma de clasificados.', strtolower($cat_name), $location );
+			$desc = sprintf( 'Encuentra los mejores %s en %s. Compra, vende y descubre oportunidades increíbles en nuestra plataforma de clasificados.', $cat_name, $location );
 
 			echo '<meta name="description" content="' . esc_attr( $desc ) . '" />' . "\n";
 		}
@@ -93,25 +92,24 @@ class Plugin_Clasificados_SEO_Manager {
      */
     public static function get_dynamic_h1() {
         $cat_slug = get_query_var( 'anuncio_cat_silo' );
+        $loc_slug = get_query_var( 'anuncio_ubicacion_silo' );
 
-        if ( ! empty( $cat_slug ) ) {
-            $cat_term = get_term_by( 'slug', $cat_slug, 'anuncio_categoria' );
-            if(!$cat_term) return '';
+        if ( ! empty( $cat_slug ) || ! empty( $loc_slug ) ) {
+            $h1 = __( 'Anuncios', 'plugin-clasificados' );
 
-            $cat_name = $cat_term->name;
+            if ( ! empty( $cat_slug ) ) {
+                $cat_term = get_term_by( 'slug', $cat_slug, 'anuncio_categoria' );
+                if ( $cat_term ) {
+                    $h1 = $cat_term->name;
+                }
+            }
 
-            $ciudad_slug = get_query_var( 'anuncio_ciudad' );
-			$distrito_slug = get_query_var( 'anuncio_distrito' );
-
-            $h1 = $cat_name;
-
-            if ( ! empty( $distrito_slug ) ) {
-				$distrito_name = str_replace( '-', ' ', ucfirst( $distrito_slug ) );
-				$h1 .= ' en ' . $distrito_name;
-			} elseif ( ! empty( $ciudad_slug ) ) {
-				$ciudad_name = str_replace( '-', ' ', ucfirst( $ciudad_slug ) );
-				$h1 .= ' en ' . $ciudad_name;
-			}
+            if ( ! empty( $loc_slug ) ) {
+                $loc_term = get_term_by( 'slug', $loc_slug, 'anuncio_ubicacion' );
+                if ( $loc_term ) {
+                    $h1 .= ' en ' . $loc_term->name;
+                }
+            }
 
             return $h1;
         }

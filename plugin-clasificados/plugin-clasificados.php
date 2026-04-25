@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Plugin Clasificados SEO Silos
  * Plugin URI: https://example.com/
- * Description: Un plugin de clasificados estilo Marketplace enfocado en escalabilidad SEO mediante estructura de silos.
- * Version: 1.0.0
+ * Description: Un plugin de clasificados estilo Marketplace enfocado en escalabilidad SEO mediante estructura de silos dinámicos.
+ * Version: 1.1.0
  * Author: Jules
  * Author URI: https://example.com/
  * License: GPLv2 or later
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'PLUGIN_CLASIFICADOS_VERSION', '1.0.0' );
+define( 'PLUGIN_CLASIFICADOS_VERSION', '1.1.0' );
 define( 'PLUGIN_CLASIFICADOS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_CLASIFICADOS_URL', plugin_dir_url( __FILE__ ) );
 
@@ -99,7 +99,6 @@ class Plugin_Clasificados {
 		// Ensure CPTs and Taxonomies are registered before flushing rewrite rules
 		Plugin_Clasificados_CPT_Taxonomies::register_cpt();
 		Plugin_Clasificados_CPT_Taxonomies::register_taxonomies();
-		Plugin_Clasificados_Rewrite_Rules::add_rewrite_rules();
 
 		flush_rewrite_rules();
 	}

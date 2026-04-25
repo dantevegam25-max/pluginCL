@@ -8,47 +8,14 @@
 
 get_header();
 
-$cat_slug = get_query_var( 'anuncio_cat_silo' );
-$ciudad_slug = get_query_var( 'anuncio_ciudad' );
-$distrito_slug = get_query_var( 'anuncio_distrito' );
-
-// Build query arguments based on silos
-$tax_queries = array( 'relation' => 'AND' );
-
-if ( ! empty( $cat_slug ) ) {
-	$tax_queries[] = array(
-		'taxonomy' => 'anuncio_categoria',
-		'field'    => 'slug',
-		'terms'    => $cat_slug,
-	);
-}
-
-// Logic for hierarchical locations
-if ( ! empty( $distrito_slug ) ) {
-    // If district is provided, filter by district
-	$tax_queries[] = array(
-		'taxonomy' => 'anuncio_ubicacion',
-		'field'    => 'slug',
-		'terms'    => $distrito_slug,
-	);
-} elseif ( ! empty( $ciudad_slug ) ) {
-     // If only city is provided, filter by city (and its districts automatically if hierarchical)
-	$tax_queries[] = array(
-		'taxonomy' => 'anuncio_ubicacion',
-		'field'    => 'slug',
-		'terms'    => $ciudad_slug,
-	);
-}
+// We no longer rely on rigid positions. We let WP_Query handle it because pre_get_posts set the tax_queries.
+// But we can extract the path to build breadcrumbs and pagination correctly.
+$silo_path = get_query_var( 'anuncio_silo_path' );
 
 // Optimization: Use 'no_found_rows' if pagination isn't needed, but typically it is.
-$args = array(
-	'post_type'      => 'anuncio',
-	'posts_per_page' => 10,
-	'paged'          => get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1,
-	'tax_query'      => $tax_queries,
-);
-
-$anuncios_query = new WP_Query( $args );
+// Instead of new WP_Query, we rely on the main query that was already modified by pre_get_posts!
+global $wp_query;
+$anuncios_query = $wp_query;
 
 // Generate Dynamic H1
 $dynamic_h1 = Plugin_Clasificados_SEO_Manager::get_dynamic_h1();
@@ -63,16 +30,31 @@ if ( empty($dynamic_h1) ) {
 
 		<header class="page-header">
 			<h1 class="page-title"><?php echo esc_html( $dynamic_h1 ); ?></h1>
-            <div class="breadcrumbs">
-               <!-- Basic Breadcrumbs MVP -->
-               <a href="<?php echo home_url(); ?>">Inicio</a> &raquo;
-               <a href="<?php echo home_url('/' . $cat_slug . '/'); ?>"><?php echo esc_html(ucfirst($cat_slug)); ?></a>
-               <?php if ( ! empty($ciudad_slug) ) : ?>
-                    &raquo; <a href="<?php echo home_url('/' . $cat_slug . '/' . $ciudad_slug . '/'); ?>"><?php echo esc_html(ucfirst(str_replace('-',' ',$ciudad_slug))); ?></a>
-               <?php endif; ?>
-               <?php if ( ! empty($distrito_slug) ) : ?>
-                    &raquo; <span><?php echo esc_html(ucfirst(str_replace('-',' ',$distrito_slug))); ?></span>
-               <?php endif; ?>
+            <div class="breadcrumbs" style="font-size:0.9em; margin-bottom: 20px;">
+               <a href="<?php echo home_url(); ?>">Inicio</a>
+               <?php
+               if ( ! empty( $silo_path ) ) {
+                   $parts = explode('/', $silo_path);
+                   $current_path = '';
+                   foreach ( $parts as $part ) {
+                       if ( empty($part) ) continue;
+                       $current_path .= '/' . $part;
+
+                       // Try to get a nice name if it's a term
+                       $name = ucfirst(str_replace('-', ' ', $part));
+                       $term_cat = get_term_by('slug', $part, 'anuncio_categoria');
+                       $term_loc = get_term_by('slug', $part, 'anuncio_ubicacion');
+
+                       if ( $term_cat ) {
+                           $name = $term_cat->name;
+                       } elseif ( $term_loc ) {
+                           $name = $term_loc->name;
+                       }
+
+                       echo ' &raquo; <a href="' . esc_url(home_url($current_path . '/')) . '">' . esc_html($name) . '</a>';
+                   }
+               }
+               ?>
             </div>
 		</header><!-- .page-header -->
 
@@ -117,9 +99,7 @@ if ( empty($dynamic_h1) ) {
 
 			<?php
 			// Pagination
-            $base_url = home_url('/' . $cat_slug . '/');
-            if ( ! empty($ciudad_slug) ) $base_url .= $ciudad_slug . '/';
-            if ( ! empty($distrito_slug) ) $base_url .= $distrito_slug . '/';
+            $base_url = home_url('/' . $silo_path . '/');
 
             echo paginate_links( array(
                 'base' => $base_url . '%_%',
@@ -130,8 +110,6 @@ if ( empty($dynamic_h1) ) {
                 'next_text' => __( 'Siguiente', 'plugin-clasificados' ),
             ) );
 
-			wp_reset_postdata();
-
 		else :
 			?>
 			<section class="no-results not-found">
@@ -139,7 +117,7 @@ if ( empty($dynamic_h1) ) {
 					<h2 class="page-title"><?php _e( 'No hay anuncios', 'plugin-clasificados' ); ?></h2>
 				</header><!-- .page-header -->
 				<div class="page-content">
-					<p><?php _e( 'Lo sentimos, no encontramos anuncios para esta ubicación y categoría.', 'plugin-clasificados' ); ?></p>
+					<p><?php _e( 'Lo sentimos, no encontramos anuncios para esta búsqueda.', 'plugin-clasificados' ); ?></p>
 				</div><!-- .page-content -->
 			</section><!-- .no-results -->
 			<?php
@@ -150,6 +128,5 @@ if ( empty($dynamic_h1) ) {
 </div><!-- #primary -->
 
 <?php
-// Optional sidebar could be loaded here based on theme compatibility
 get_sidebar();
 get_footer();
