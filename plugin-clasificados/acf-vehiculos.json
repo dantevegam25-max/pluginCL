@@ -1,0 +1,121 @@
+[
+    {
+        "key": "group_64df12a1b2c3d",
+        "title": "Detalles del Vehículo",
+        "fields": [
+            {
+                "key": "field_64df12a1c3e4f",
+                "label": "Operación",
+                "name": "operacion",
+                "type": "select",
+                "instructions": "¿Qué tipo de anuncio es?",
+                "required": 1,
+                "choices": {
+                    "venta": "Venta",
+                    "compra": "Compra",
+                    "intercambio": "Intercambio"
+                },
+                "default_value": "venta",
+                "return_format": "label"
+            },
+            {
+                "key": "field_64df12a1d4f50",
+                "label": "Precio",
+                "name": "precio",
+                "type": "number",
+                "instructions": "Ingresa el precio (Ej. 15000). Deja en blanco si es a tratar.",
+                "required": 0,
+                "prepend": "$"
+            },
+            {
+                "key": "field_64df12a1e5061",
+                "label": "Marca",
+                "name": "marca",
+                "type": "text",
+                "instructions": "Ej: Toyota, Ford, Kia",
+                "required": 1
+            },
+            {
+                "key": "field_64df12a1f6172",
+                "label": "Modelo / Año",
+                "name": "modelo",
+                "type": "text",
+                "instructions": "Ej: Corolla 2021",
+                "required": 1
+            },
+            {
+                "key": "field_64df12a1g7283",
+                "label": "Transmisión",
+                "name": "transmision",
+                "type": "select",
+                "choices": {
+                    "automatica": "Automática",
+                    "manual": "Manual",
+                    "secuencial": "Secuencial"
+                },
+                "allow_null": 1,
+                "return_format": "label"
+            },
+            {
+                "key": "field_64df12a1h8394",
+                "label": "Tipo de Auto",
+                "name": "tipo_de_auto",
+                "type": "select",
+                "choices": {
+                    "sedan": "Sedán",
+                    "suv": "SUV",
+                    "hatchback": "Hatchback",
+                    "pickup": "Pick-up",
+                    "coupe": "Coupé"
+                },
+                "allow_null": 1,
+                "return_format": "label"
+            },
+            {
+                "key": "field_64df12a1i94a5",
+                "label": "Teléfono (WhatsApp)",
+                "name": "telefono",
+                "type": "text",
+                "instructions": "Ingresa el número con el código de país para el botón de WhatsApp (Ej: +51999888777)",
+                "required": 1
+            },
+            {
+                "key": "field_64df12a1j05b6",
+                "label": "Email de Contacto",
+                "name": "email",
+                "type": "email",
+                "instructions": "Opcional.",
+                "required": 0
+            },
+            {
+                "key": "field_64df12a1k16c7",
+                "label": "Palabras Clave",
+                "name": "palabras_clave",
+                "type": "text",
+                "instructions": "Palabras clave adicionales separadas por comas."
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "anuncio"
+                },
+                {
+                    "param": "taxonomy",
+                    "operator": "==",
+                    "value": "anuncio_categoria:vehiculos"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "Campos específicos para la categoría de Vehículos en el marketplace."
+    }
+]

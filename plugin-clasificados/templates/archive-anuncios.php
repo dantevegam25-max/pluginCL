@@ -51,6 +51,8 @@ if ( empty($dynamic_h1) ) {
                            $name = $term_loc->name;
                        }
 
+                       // Need to prefix with base slug if configured or standard 'anuncios'/'ubicacion'
+                       // For simplicity in MVP breadcrumbs, we build relative to root.
                        echo ' &raquo; <a href="' . esc_url(home_url($current_path . '/')) . '">' . esc_html($name) . '</a>';
                    }
                }
@@ -64,32 +66,51 @@ if ( empty($dynamic_h1) ) {
 				<?php
 				while ( $anuncios_query->have_posts() ) :
 					$anuncios_query->the_post();
-					?>
-					<article id="post-<?php the_ID(); ?>" <?php post_class( 'anuncio-card' ); ?> style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
 
+                    // Fetch ACF fields for the card
+                    $precio    = function_exists('get_field') ? get_field('precio') : get_post_meta( get_the_ID(), 'precio', true );
+                    $operacion = function_exists('get_field') ? get_field('operacion') : '';
+                    $marca     = function_exists('get_field') ? get_field('marca') : '';
+                    $modelo    = function_exists('get_field') ? get_field('modelo') : '';
+					?>
+					<article id="post-<?php the_ID(); ?>" <?php post_class( 'anuncio-card' ); ?> style="border: 1px solid #ddd; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; background: #fff;">
+
+                        <!-- Image Area -->
 						<?php if ( has_post_thumbnail() ) : ?>
-							<div class="anuncio-thumbnail" style="margin-bottom: 10px;">
+							<div class="anuncio-thumbnail" style="margin-bottom: 15px; position: relative;">
+                                <?php if ( $operacion ) : ?>
+                                    <span style="position: absolute; top: 10px; left: 10px; background: rgba(2, 132, 199, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; z-index: 2;">
+                                        <?php echo esc_html( $operacion ); ?>
+                                    </span>
+                                <?php endif; ?>
 								<a href="<?php the_permalink(); ?>">
-									<?php the_post_thumbnail( 'medium', array( 'style' => 'width: 100%; height: auto;' ) ); ?>
+									<?php the_post_thumbnail( 'medium', array( 'style' => 'width: 100%; height: 200px; object-fit: cover; border-radius: 4px;' ) ); ?>
 								</a>
 							</div>
 						<?php endif; ?>
 
-						<header class="entry-header">
-							<?php the_title( '<h2 class="entry-title" style="font-size: 1.2em; margin-bottom: 10px;"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' ); ?>
-						</header><!-- .entry-header -->
+                        <!-- Content Area -->
+						<header class="entry-header" style="flex-grow: 1;">
+							<?php the_title( '<h2 class="entry-title" style="font-size: 1.2em; margin: 0 0 10px 0; line-height: 1.3;"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark" style="color: #333; text-decoration: none;">', '</a></h2>' ); ?>
 
-						<div class="entry-summary">
-							<?php the_excerpt(); ?>
-						</div><!-- .entry-summary -->
+                            <?php if($marca || $modelo): ?>
+                                <div class="anuncio-meta" style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
+                                    <?php echo esc_html( implode(' • ', array_filter([$marca, $modelo])) ); ?>
+                                </div>
+                            <?php endif; ?>
+						</header>
 
-                        <!-- MVP custom fields display with ACF fallback -->
-                        <?php
-                        $precio = function_exists('get_field') ? get_field('precio') : get_post_meta( get_the_ID(), 'precio', true );
-                        if ( $precio ) {
-                            echo '<p class="anuncio-precio"><strong>Precio:</strong> ' . esc_html($precio) . '</p>';
-                        }
-                        ?>
+                        <!-- Footer Area (Price) -->
+                        <div class="anuncio-footer" style="margin-top: auto; padding-top: 15px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="anuncio-precio">
+                                <?php if ( $precio ) : ?>
+                                    <strong style="color: #16a34a; font-size: 1.3em;">$<?php echo esc_html( number_format($precio, 0) ); ?></strong>
+                                <?php else: ?>
+                                    <strong style="color: #666; font-size: 1.1em;">A tratar</strong>
+                                <?php endif; ?>
+                            </div>
+                            <a href="<?php the_permalink(); ?>" class="button" style="font-size: 0.85em; padding: 5px 10px;">Ver detalle</a>
+                        </div>
 
 					</article><!-- #post-<?php the_ID(); ?> -->
 					<?php
