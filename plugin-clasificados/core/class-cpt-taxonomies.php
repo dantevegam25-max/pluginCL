@@ -111,8 +111,8 @@ class Plugin_Clasificados_CPT_Taxonomies {
 			'show_admin_column'          => true,
 			'show_in_nav_menus'          => true,
 			'show_tagcloud'              => true,
-			// Enable hierarchical rewrite so get_term_link() outputs /clasificados/mascotas/gatos/
-			'rewrite'                    => array( 'slug' => 'clasificados', 'with_front' => false, 'hierarchical' => true ),
+			// Enable hierarchical rewrite so get_term_link() outputs /anuncios/mascotas/gatos/
+			'rewrite'                    => array( 'slug' => 'anuncios', 'with_front' => false, 'hierarchical' => true ),
 			'show_in_rest'               => true,
 		);
 		register_taxonomy( 'anuncio_categoria', array( 'anuncio' ), $args_cat );
