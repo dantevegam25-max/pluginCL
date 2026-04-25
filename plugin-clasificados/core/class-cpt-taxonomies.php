@@ -111,7 +111,8 @@ class Plugin_Clasificados_CPT_Taxonomies {
 			'show_admin_column'          => true,
 			'show_in_nav_menus'          => true,
 			'show_tagcloud'              => true,
-			'rewrite'                    => array( 'slug' => 'clasificados', 'with_front' => false ), // Abstract slug to not conflict with our silo rule
+			// Enable hierarchical rewrite so get_term_link() outputs /clasificados/mascotas/gatos/
+			'rewrite'                    => array( 'slug' => 'clasificados', 'with_front' => false, 'hierarchical' => true ),
 			'show_in_rest'               => true,
 		);
 		register_taxonomy( 'anuncio_categoria', array( 'anuncio' ), $args_cat );
@@ -147,7 +148,8 @@ class Plugin_Clasificados_CPT_Taxonomies {
 			'show_admin_column'          => true,
 			'show_in_nav_menus'          => true,
 			'show_tagcloud'              => false,
-			'rewrite'                    => array( 'slug' => 'ubicacion', 'with_front' => false ),
+			// Enable hierarchical rewrite so get_term_link() outputs /ubicacion/lima/san-borja/
+			'rewrite'                    => array( 'slug' => 'ubicacion', 'with_front' => false, 'hierarchical' => true ),
 			'show_in_rest'               => true,
 		);
 		register_taxonomy( 'anuncio_ubicacion', array( 'anuncio' ), $args_loc );
