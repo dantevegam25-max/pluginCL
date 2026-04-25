@@ -70,8 +70,12 @@ if ( empty($dynamic_h1) ) {
                     // Fetch ACF fields for the card
                     $precio    = function_exists('get_field') ? get_field('precio') : get_post_meta( get_the_ID(), 'precio', true );
                     $operacion = function_exists('get_field') ? get_field('operacion') : '';
+
+                    // Vehicle / Pet general details
                     $marca     = function_exists('get_field') ? get_field('marca') : '';
                     $modelo    = function_exists('get_field') ? get_field('modelo') : '';
+                    $raza      = function_exists('get_field') ? get_field('raza') : '';
+                    $edad      = function_exists('get_field') ? get_field('edad') : '';
 					?>
 					<article id="post-<?php the_ID(); ?>" <?php post_class( 'anuncio-card' ); ?> style="border: 1px solid #ddd; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; background: #fff;">
 
@@ -93,9 +97,11 @@ if ( empty($dynamic_h1) ) {
 						<header class="entry-header" style="flex-grow: 1;">
 							<?php the_title( '<h2 class="entry-title" style="font-size: 1.2em; margin: 0 0 10px 0; line-height: 1.3;"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark" style="color: #333; text-decoration: none;">', '</a></h2>' ); ?>
 
-                            <?php if($marca || $modelo): ?>
+                            <?php
+                            $meta_items = array_filter([$marca, $modelo, $raza, $edad]);
+                            if ( ! empty($meta_items) ) : ?>
                                 <div class="anuncio-meta" style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
-                                    <?php echo esc_html( implode(' • ', array_filter([$marca, $modelo])) ); ?>
+                                    <?php echo esc_html( implode(' • ', $meta_items) ); ?>
                                 </div>
                             <?php endif; ?>
 						</header>
@@ -106,7 +112,7 @@ if ( empty($dynamic_h1) ) {
                                 <?php if ( $precio ) : ?>
                                     <strong style="color: #16a34a; font-size: 1.3em;">$<?php echo esc_html( number_format($precio, 0) ); ?></strong>
                                 <?php else: ?>
-                                    <strong style="color: #666; font-size: 1.1em;">A tratar</strong>
+                                    <strong style="color: #666; font-size: 1.1em;">Consultar</strong>
                                 <?php endif; ?>
                             </div>
                             <a href="<?php the_permalink(); ?>" class="button" style="font-size: 0.85em; padding: 5px 10px;">Ver detalle</a>

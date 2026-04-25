@@ -66,10 +66,18 @@ get_header(); ?>
                             // ACF Fetch logic (with fallback for precio)
                             $precio      = function_exists('get_field') ? get_field('precio') : get_post_meta( get_the_ID(), 'precio', true );
                             $operacion   = function_exists('get_field') ? get_field('operacion') : '';
+
+                            // Vehicle fields
                             $marca       = function_exists('get_field') ? get_field('marca') : '';
                             $modelo      = function_exists('get_field') ? get_field('modelo') : '';
                             $transmision = function_exists('get_field') ? get_field('transmision') : '';
                             $tipo_auto   = function_exists('get_field') ? get_field('tipo_de_auto') : '';
+
+                            // Pet fields
+                            $raza        = function_exists('get_field') ? get_field('raza') : '';
+                            $edad        = function_exists('get_field') ? get_field('edad') : '';
+
+                            // Contact fields
                             $telefono    = function_exists('get_field') ? get_field('telefono') : '';
                             $email       = function_exists('get_field') ? get_field('email') : '';
                             ?>
@@ -88,14 +96,14 @@ get_header(); ?>
                                     </span>
                                 <?php else: ?>
                                     <span class="anuncio-precio-destacado" style="font-size: 1.5em; font-weight: bold; color: #666;">
-                                        Precio a tratar
+                                        Consultar precio
                                     </span>
                                 <?php endif; ?>
                             </div>
 
-                            <!-- Vehicle Details -->
-                            <?php if ( $marca || $modelo || $transmision || $tipo_auto ) : ?>
-                                <h4 style="margin-top: 0;">Detalles del Vehículo</h4>
+                            <!-- Dynamic Details -->
+                            <?php if ( $marca || $modelo || $transmision || $tipo_auto || $raza || $edad ) : ?>
+                                <h4 style="margin-top: 0;">Detalles</h4>
                                 <ul style="list-style: none; padding: 0; margin: 0 0 20px 0; font-size: 0.95em;">
                                     <?php if($marca): ?>
                                         <li style="padding: 8px 0; border-bottom: 1px dashed #ddd;"><strong>Marca:</strong> <span style="float:right;"><?php echo esc_html($marca); ?></span></li>
@@ -107,7 +115,13 @@ get_header(); ?>
                                         <li style="padding: 8px 0; border-bottom: 1px dashed #ddd;"><strong>Transmisión:</strong> <span style="float:right;"><?php echo esc_html($transmision); ?></span></li>
                                     <?php endif; ?>
                                     <?php if($tipo_auto): ?>
-                                        <li style="padding: 8px 0;"><strong>Tipo:</strong> <span style="float:right;"><?php echo esc_html($tipo_auto); ?></span></li>
+                                        <li style="padding: 8px 0; border-bottom: 1px dashed #ddd;"><strong>Tipo:</strong> <span style="float:right;"><?php echo esc_html($tipo_auto); ?></span></li>
+                                    <?php endif; ?>
+                                    <?php if($raza): ?>
+                                        <li style="padding: 8px 0; border-bottom: 1px dashed #ddd;"><strong>Raza:</strong> <span style="float:right;"><?php echo esc_html($raza); ?></span></li>
+                                    <?php endif; ?>
+                                    <?php if($edad): ?>
+                                        <li style="padding: 8px 0;"><strong>Edad:</strong> <span style="float:right;"><?php echo esc_html($edad); ?></span></li>
                                     <?php endif; ?>
                                 </ul>
                             <?php endif; ?>
