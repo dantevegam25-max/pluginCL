@@ -67,6 +67,9 @@ class Plugin_Clasificados {
 		if ( is_admin() ) {
 			require_once PLUGIN_CLASIFICADOS_DIR . 'includes/class-admin-settings.php';
 		}
+
+		// ACF Integration
+		require_once PLUGIN_CLASIFICADOS_DIR . 'includes/class-acf-integration.php';
 	}
 
 	/**
@@ -85,6 +88,9 @@ class Plugin_Clasificados {
 		if ( is_admin() ) {
 			Plugin_Clasificados_Admin_Settings::init();
 		}
+
+		// Instantiate ACF Integration
+		Plugin_Clasificados_ACF_Integration::init();
 
 		// Activation hook
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );

@@ -103,7 +103,7 @@
                     "value": "anuncio"
                 },
                 {
-                    "param": "taxonomy",
+                    "param": "post_taxonomy",
                     "operator": "==",
                     "value": "anuncio_categoria:vehiculos"
                 }
